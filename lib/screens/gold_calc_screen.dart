@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goldcalc/widgets/clc_button.dart';
 
+
 class GoldCalcScreen extends StatefulWidget {
   const GoldCalcScreen({super.key});
 
@@ -9,16 +10,17 @@ class GoldCalcScreen extends StatefulWidget {
 }
 
 class _GoldCalcScreenState extends State<GoldCalcScreen> {
-  double number1 = 0;
-  double number2 = 0;
+  late double number1;
+  late double number2;
   String operation = '';
   String txtDisplay = '';
   String res = '';
   String hist = '';
-  final notes = <String>['00','0','1','2','3','4','5','6','7','8','9'] ;
+
+  final List<String> notes = ['00', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  final List<String> operations = ['DEL', 'AC', '%', '/', '.', 'x', '+', '-', '='];
 
   void btnClick(String btnVal) {
-    //print(btnVal);
     if (btnVal == 'AC') {
       txtDisplay = '';
       hist = '';
@@ -26,60 +28,78 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
       number2 = 0;
       res = '';
       operation = '';
-    } else if (btnVal == '/' || btnVal == 'x' || btnVal == '-' || btnVal == '+' ){
-      operation = btnVal;
-    } else if (notes.indexOf(btnVal)!=-1) {
-       if(operation !='')    {
-
-       }
-    }
-
-
-      /*
-    } else if (btnVal != '%' &&
-        btnVal != 'DEL' &&
-        btnVal != '/' &&
-        btnVal != 'x' &&
-        btnVal != '-' &&
-        btnVal != '+' &&
-        btnVal != '=') {
-      if (btnVal == '.' && !txtDisplay.contains('.')) {
-        if (txtDisplay == '') {
-          txtDisplay = '0.';
+    } else if (btnVal == 'DEL') {
+      if (res.isNotEmpty) {
+        res = res.substring(0, res.length - 1);
+        if (operation == '') {
+          number1 = double.parse(res);
         } else {
-          txtDisplay += btnVal;
+          number2 = double.parse(res.substring(0, res.indexOf(operation)));
         }
-        hist = txtDisplay;
-      } else if (btnVal == '00') {
-        txtDisplay = '0';
-      } else {
-        txtDisplay += btnVal;
       }
-      hist = txtDisplay;
-      number1 == 0 && operation == ''
-          ? number1 = int.parse(txtDisplay).toDouble()
-          : number2 = int.parse(txtDisplay).toDouble();
     } else if (btnVal == '%') {
-      if (number1 == 0 && number2 == 0) {
-        txtDisplay = '0%';
-        hist = txtDisplay;
-      } else if (number1 != 0 && number2 == 0) {
-        number1 = number1 / 100;
-        txtDisplay = number1.toString();
-        hist += '%';
+      if (res.isNotEmpty) {
+        double value = double.parse(res);
+        value /= 100;
+        res = value.toString();
+        if (operation == '') {
+          number1 = value;
+        } else {
+          number2 = value;
+        }
       }
+    } else if (notes.contains(btnVal)) {
+      if (operation == '') {
+        res += btnVal;
+        number1 = double.parse(res);
+      } else if (operation != '') {
+        res += btnVal;
+        number2 = double.parse(res.substring(res.indexOf(operation)+1));
+      }
+    } else if (operations.contains(btnVal)) {
+      if (btnVal == '.') {
+        if (!res.contains('.')) {
+          res += '.';
+        }
+      } else if (btnVal == '00') {
+        if (res.isNotEmpty) {
+          res += '00';
+        }
+      } else if (btnVal == '0') {
+        if (res.isNotEmpty) {
+          res += '0';
+        }
+      } else if (btnVal != '=') {
+        operation = btnVal;
+        hist += '$number1 $operation ';
+        txtDisplay = hist;
+        res = '';
+      } else {
+        double result = 0;
+       // String resStr ='';
+        if (operation == '+') {
+          result = 0.000001*(1000000*(number1 + number2)).floor();
+        } else if (operation == '-') {
+          result = 0.000001*(1000000*(number1 - number2)).floor();
+        } else if (operation == 'x') {
+          result = 0.000001*(1000000*(number1 * number2)).floor();
+        } else if (operation == '/') {
+          result = 0.000001*(1000000*(number1 / number2)).floor();
+        }
+        //txtDisplay = result.toString();
+        //resStr = result.toStringAsFixed(2);
+        hist += '$number2 = $result';
+        //res = '';
+        res = result.toString();
+        number1 = result;
+        number2 = 0;
+        //operation = '';
+      }
+     // operation = btnVal;
     }
-    else if (btnVal == '/' || btnVal == 'x' || btnVal == '-' || btnVal == '+' && btnVal == '='){
-      operation = btnVal;
-      
-    }
-     */
-
-
-
 
     setState(() {
-      res = txtDisplay;
+      txtDisplay = res;
     });
   }
 
@@ -108,7 +128,7 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
               child: Padding(
                 padding: EdgeInsets.all(14),
                 child: Text(
-                  res,
+                  txtDisplay,
                   style: TextStyle(
                     fontFamily: 'Outfit',
                     color: Color(0xFFD4AF37),
@@ -265,3 +285,4 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
     );
   }
 }
+
