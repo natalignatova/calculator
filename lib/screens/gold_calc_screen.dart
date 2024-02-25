@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goldcalc/widgets/clc_button.dart';
+import 'package:goldcalc/screens/mile_to_km.dart';
+
 
 
 class GoldCalcScreen extends StatefulWidget {
@@ -119,6 +121,15 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
         ),
         backgroundColor: Color(0xFF000000),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: (){
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MileToKm()));
+              },
+            icon: Icon(Icons.straighten, color: Color(0xFFD4AF37)),
+          ),
+        ],
       ),
       body: Container(
         child: Column(
