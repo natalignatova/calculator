@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:goldcalc/widgets/clc_button.dart';
 import 'package:goldcalc/screens/mile_to_km.dart';
-
-
+import 'package:goldcalc/screens/goldcalchistory.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class GoldCalcScreen extends StatefulWidget {
   const GoldCalcScreen({super.key});
@@ -18,9 +19,28 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
   String txtDisplay = '';
   String res = '';
   String hist = '';
+  String stringToHistory = '';
 
-  final List<String> notes = ['00', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  final List<String> notes = [ '00','0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   final List<String> operations = ['DEL', 'AC', '%', '/', '.', 'x', '+', '-', '='];
+
+  //SharedPreferences
+  /*
+  Future<void> addHistoryToList(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> list = prefs.getStringList(key) ?? [];
+    list.add(value);
+    await prefs.setStringList(key, list);
+  }
+  */
+
+
+  Future<void> addHistoryToList(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> list = prefs.getStringList(key) ?? [];
+    list.add(value);
+    await prefs.setStringList(key, list);
+  }
 
   void btnClick(String btnVal) {
     if (btnVal == 'AC') {
@@ -56,7 +76,7 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
         number1 = double.parse(res);
       } else if (operation != '') {
         res += btnVal;
-        number2 = double.parse(res.substring(res.indexOf(operation)+1));
+        number2 = double.parse(res.substring(res.indexOf(operation) + 1));
       }
     } else if (operations.contains(btnVal)) {
       if (btnVal == '.') {
@@ -78,26 +98,28 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
         res = '';
       } else {
         double result = 0;
-       // String resStr ='';
+        // String resStr ='';
         if (operation == '+') {
-          result = 0.000001*(1000000*(number1 + number2)).floor();
+          result = 0.000001 * (1000000 * (number1 + number2)).floor();
         } else if (operation == '-') {
-          result = 0.000001*(1000000*(number1 - number2)).floor();
+          result = 0.000001 * (1000000 * (number1 - number2)).floor();
         } else if (operation == 'x') {
-          result = 0.000001*(1000000*(number1 * number2)).floor();
+          result = 0.000001 * (1000000 * (number1 * number2)).floor();
         } else if (operation == '/') {
-          result = 0.000001*(1000000*(number1 / number2)).floor();
+          result = 0.000001 * (1000000 * (number1 / number2)).floor();
         }
         //txtDisplay = result.toString();
         //resStr = result.toStringAsFixed(2);
         hist += '$number2 = $result';
+        stringToHistory = hist + ', ' + DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+        addHistoryToList('historyGoldCalc', stringToHistory);
         //res = '';
         res = result.toString();
         number1 = result;
         number2 = 0;
         //operation = '';
       }
-     // operation = btnVal;
+      // operation = btnVal;
     }
 
     setState(() {
@@ -121,12 +143,19 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
         ),
         backgroundColor: Color(0xFF000000),
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.history,color: Color(0xFFD4AF37)),
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => GoldCalcHistory()));
+          },
+        ),
         actions: [
           IconButton(
-            onPressed: (){
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => MileToKm()));
-              },
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => MileToKm()));
+            },
             icon: Icon(Icons.straighten, color: Color(0xFFD4AF37)),
           ),
         ],
@@ -296,4 +325,3 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
     );
   }
 }
-
