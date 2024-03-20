@@ -51,15 +51,17 @@ class _GoldCalcHistory extends State<GoldCalcHistory> {
           },
         ),
       ),
-      body: Container(
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 6),
-            Expanded(
-              child: ListView.builder(
+      body: SingleChildScrollView( // Обернуть контейнер в SingleChildScrollView
+        child: Container(
+          alignment: Alignment.centerRight,
+          padding: EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 6),
+              ListView.builder(
+                shrinkWrap: true, // ListView занимает только необходимое пространство
+                physics: NeverScrollableScrollPhysics(), // Отключает прокрутку ListView, так как уже есть SingleChildScrollView
                 itemCount: historyList.length,
                 itemBuilder: (context, index) {
                   return Text(
@@ -72,8 +74,8 @@ class _GoldCalcHistory extends State<GoldCalcHistory> {
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

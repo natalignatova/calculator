@@ -4,6 +4,8 @@ import 'package:goldcalc/screens/mile_to_km.dart';
 import 'package:goldcalc/screens/goldcalchistory.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:math_expressions/math_expressions.dart';
+import 'dart:core';
 
 class GoldCalcScreen extends StatefulWidget {
   const GoldCalcScreen({super.key});
@@ -13,26 +15,11 @@ class GoldCalcScreen extends StatefulWidget {
 }
 
 class _GoldCalcScreenState extends State<GoldCalcScreen> {
-  late double number1;
-  late double number2;
-  String operation = '';
   String txtDisplay = '';
-  String res = '';
   String hist = '';
   String stringToHistory = '';
+  String expression = '';
 
-  final List<String> notes = [ '00','0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  final List<String> operations = ['DEL', 'AC', '%', '/', '.', 'x', '+', '-', '='];
-
-  //SharedPreferences
-  /*
-  Future<void> addHistoryToList(String key, String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> list = prefs.getStringList(key) ?? [];
-    list.add(value);
-    await prefs.setStringList(key, list);
-  }
-  */
 
 
   Future<void> addHistoryToList(String key, String value) async {
@@ -43,89 +30,64 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
   }
 
   void btnClick(String btnVal) {
-    if (btnVal == 'AC') {
-      txtDisplay = '';
-      hist = '';
-      number1 = 0;
-      number2 = 0;
-      res = '';
-      operation = '';
-    } else if (btnVal == 'DEL') {
-      if (res.isNotEmpty) {
-        res = res.substring(0, res.length - 1);
-        if (operation == '') {
-          number1 = double.parse(res);
-        } else {
-          number2 = double.parse(res.substring(0, res.indexOf(operation)));
-        }
-      }
-    } else if (btnVal == '%') {
-      if (res.isNotEmpty) {
-        double value = double.parse(res);
-        value /= 100;
-        res = value.toString();
-        if (operation == '') {
-          number1 = value;
-        } else {
-          number2 = value;
-        }
-      }
-    } else if (notes.contains(btnVal)) {
-      if (operation == '') {
-        res += btnVal;
-        number1 = double.parse(res);
-      } else if (operation != '') {
-        res += btnVal;
-        number2 = double.parse(res.substring(res.indexOf(operation) + 1));
-      }
-    } else if (operations.contains(btnVal)) {
-      if (btnVal == '.') {
-        if (!res.contains('.')) {
-          res += '.';
-        }
-      } else if (btnVal == '00') {
-        if (res.isNotEmpty) {
-          res += '00';
-        }
-      } else if (btnVal == '0') {
-        if (res.isNotEmpty) {
-          res += '0';
-        }
-      } else if (btnVal != '=') {
-        operation = btnVal;
-        hist += '$number1 $operation ';
-        txtDisplay = hist;
-        res = '';
-      } else {
-        double result = 0;
-        // String resStr ='';
-        if (operation == '+') {
-          result = 0.000001 * (1000000 * (number1 + number2)).floor();
-        } else if (operation == '-') {
-          result = 0.000001 * (1000000 * (number1 - number2)).floor();
-        } else if (operation == 'x') {
-          result = 0.000001 * (1000000 * (number1 * number2)).floor();
-        } else if (operation == '/') {
-          result = 0.000001 * (1000000 * (number1 / number2)).floor();
-        }
-        //txtDisplay = result.toString();
-        //resStr = result.toStringAsFixed(2);
-        hist += '$number2 = $result';
-        stringToHistory = hist + ', ' + DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-        addHistoryToList('historyGoldCalc', stringToHistory);
-        //res = '';
-        res = result.toString();
-        number1 = result;
-        number2 = 0;
-        //operation = '';
-      }
-      // operation = btnVal;
-    }
-
     setState(() {
-      txtDisplay = res;
+      if (btnVal == 'AC') {
+        txtDisplay = '';
+        hist = '';
+        stringToHistory = '';
+        expression = '';
+      } else if (btnVal == 'DEL') {
+        if (hist.isNotEmpty) {
+          hist = hist.substring(0, hist.length - 1);
+        }
+      } else if (btnVal == '%') {
+       print(RegExp(r"[\/x+\-]").allMatches(hist));
+        if (txtDisplay.isNotEmpty) {
+          hist = txtDisplay + '% =';
+          txtDisplay = (double.parse(txtDisplay) * 0.01).toString();
+          stringToHistory = hist + txtDisplay + ', ' +
+              DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+          addHistoryToList('historyGoldCalc', stringToHistory);
+
+        } else if ((RegExp(r"[\/x+\-]").allMatches(hist)).isEmpty) {
+          txtDisplay = (double.parse(hist) * 0.01).toString();
+          hist += btnVal;
+          stringToHistory = hist + '=' + txtDisplay + ', ' +
+              DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+          addHistoryToList('historyGoldCalc', stringToHistory);
+        } else {
+          txtDisplay = "Error";
+        }
+
+
+      } else {
+        hist += btnVal;
+
+        if (btnVal == "=") {
+            expression = hist.substring(0, hist.length - 1);
+            expression = expression.replaceAll('x', '*');
+            expression = expression.replaceAll('÷', '/');
+            // print(expression);
+          try {
+            Parser p = Parser();
+          //  print(p);
+            Expression exp = p.parse(expression);
+          //  print(exp);
+            ContextModel cm = ContextModel();
+            txtDisplay = '${exp.evaluate(EvaluationType.REAL, cm)}';
+           // txtDisplay = res.substring(0, 9);;
+            stringToHistory = hist + txtDisplay + ', ' +
+                DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+            addHistoryToList('historyGoldCalc', stringToHistory);
+          } catch (e) {
+            txtDisplay = "Error";
+           // print('Ошибка: $e');
+          }
+        }
+      }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
