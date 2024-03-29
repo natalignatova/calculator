@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:goldcalc/screens/gold_calc_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:goldcalc/methods/get_history_method.dart';
 
 class GoldCalcHistory extends StatefulWidget {
   const GoldCalcHistory({Key? key}) : super(key: key);
@@ -10,22 +10,16 @@ class GoldCalcHistory extends StatefulWidget {
 }
 
 class _GoldCalcHistory extends State<GoldCalcHistory> {
-  List<String> historyList = [];
+  late GetHistoryMethod getHistory;
+
 
   @override
   void initState() {
     super.initState();
-    loadHistoryList();
-  }
-
-  Future<void> loadHistoryList() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? list = prefs.getStringList('historyGoldCalc');
-    if (list != null) {
-      setState(() {
-        historyList = list;
-      });
-    }
+    getHistory = GetHistoryMethod(updateStateCallback: () {
+      setState(() {});
+    });
+    getHistory.loadHistoryList();
   }
 
   @override
@@ -62,10 +56,10 @@ class _GoldCalcHistory extends State<GoldCalcHistory> {
               ListView.builder(
                 shrinkWrap: true, // ListView занимает только необходимое пространство
                 physics: NeverScrollableScrollPhysics(), // Отключает прокрутку ListView, так как уже есть SingleChildScrollView
-                itemCount: historyList.length,
+                itemCount: getHistory.historyList.length,
                 itemBuilder: (context, index) {
                   return Text(
-                    historyList[index],
+                    getHistory.historyList[index],
                     style: TextStyle(
                       color: Color(0xFFD4AF37),
                       fontSize: 16,

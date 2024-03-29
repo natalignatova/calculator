@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:goldcalc/widgets/clc_button.dart';
 import 'package:goldcalc/screens/mile_to_km.dart';
 import 'package:goldcalc/screens/goldcalchistory.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
-import 'package:math_expressions/math_expressions.dart';
 import 'dart:core';
+import 'package:goldcalc/methods/calc_method.dart';
+import 'package:goldcalc/methods/add_history_method.dart';
 
 class GoldCalcScreen extends StatefulWidget {
   const GoldCalcScreen({super.key});
@@ -15,79 +14,19 @@ class GoldCalcScreen extends StatefulWidget {
 }
 
 class _GoldCalcScreenState extends State<GoldCalcScreen> {
-  String txtDisplay = '';
-  String hist = '';
-  String stringToHistory = '';
-  String expression = '';
+  late GoldCalcMethod calcMethod;
+  late AddHistoryMethod addHistory;
 
-
-
-  Future<void> addHistoryToList(String key, String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> list = prefs.getStringList(key) ?? [];
-    list.add(value);
-    await prefs.setStringList(key, list);
-  }
-
-  void btnClick(String btnVal) {
-    setState(() {
-      if (btnVal == 'AC') {
-        txtDisplay = '';
-        hist = '';
-        stringToHistory = '';
-        expression = '';
-      } else if (btnVal == 'DEL') {
-        if (hist.isNotEmpty) {
-          hist = hist.substring(0, hist.length - 1);
-        }
-      } else if (btnVal == '%') {
-       print(RegExp(r"[\/x+\-]").allMatches(hist));
-        if (txtDisplay.isNotEmpty) {
-          hist = txtDisplay + '% =';
-          txtDisplay = (double.parse(txtDisplay) * 0.01).toString();
-          stringToHistory = hist + txtDisplay + ', ' +
-              DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-          addHistoryToList('historyGoldCalc', stringToHistory);
-
-        } else if ((RegExp(r"[\/x+\-]").allMatches(hist)).isEmpty) {
-          txtDisplay = (double.parse(hist) * 0.01).toString();
-          hist += btnVal;
-          stringToHistory = hist + '=' + txtDisplay + ', ' +
-              DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-          addHistoryToList('historyGoldCalc', stringToHistory);
-        } else {
-          txtDisplay = "Error";
-        }
-
-
-      } else {
-        hist += btnVal;
-
-        if (btnVal == "=") {
-            expression = hist.substring(0, hist.length - 1);
-            expression = expression.replaceAll('x', '*');
-            expression = expression.replaceAll('÷', '/');
-            // print(expression);
-          try {
-            Parser p = Parser();
-          //  print(p);
-            Expression exp = p.parse(expression);
-          //  print(exp);
-            ContextModel cm = ContextModel();
-            txtDisplay = '${exp.evaluate(EvaluationType.REAL, cm)}';
-           // txtDisplay = res.substring(0, 9);;
-            stringToHistory = hist + txtDisplay + ', ' +
-                DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-            addHistoryToList('historyGoldCalc', stringToHistory);
-          } catch (e) {
-            txtDisplay = "Error";
-           // print('Ошибка: $e');
-          }
-        }
-      }
+  @override
+  void initState() {
+    super.initState();
+    addHistory = AddHistoryMethod(updateStateCallback: () {
+      setState(() {});
+    });
+    calcMethod = GoldCalcMethod(addHistory: addHistory, updateStateCallback: () {
+      setState(() {});
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +69,8 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
               child: Padding(
                 padding: EdgeInsets.all(14),
                 child: Text(
-                  txtDisplay,
+                  //txtDisplay,
+                  calcMethod.txtDisplay,
                   style: TextStyle(
                     fontFamily: 'Outfit',
                     color: Color(0xFFD4AF37),
@@ -146,7 +86,8 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
               child: Padding(
                 padding: EdgeInsets.all(14),
                 child: Text(
-                  hist,
+                  //hist,
+                  calcMethod.hist,
                   style: TextStyle(
                     fontFamily: 'Outfit',
                     color: Color(0x7FD4AF37),
@@ -163,22 +104,22 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                     txt: 'AC',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '%',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: 'DEL',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '/',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick)
+                    callback: calcMethod.btnClick)
               ],
             ),
             Row(
@@ -188,22 +129,22 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                     txt: '7',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '8',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '9',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: 'x',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick)
+                    callback: calcMethod.btnClick)
               ],
             ),
             Row(
@@ -213,22 +154,22 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                     txt: '4',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '5',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '6',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '-',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
               ],
             ),
             Row(
@@ -238,22 +179,22 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                     txt: '1',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '2',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '3',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '+',
                     txtclr: 0xFF000000,
                     backclr: 0xBFD4AF37,
-                    callback: btnClick)
+                    callback: calcMethod.btnClick)
               ],
             ),
             Row(
@@ -263,22 +204,22 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                     txt: '00',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '0',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '.',
                     txtclr: 0xFFFFFFFF,
                     backclr: 0x7FD4AF37,
-                    callback: btnClick),
+                    callback: calcMethod.btnClick),
                 ClcButton(
                     txt: '=',
                     txtclr: 0xFF000000,
                     backclr: 0xFFD4AF37,
-                    callback: btnClick)
+                    callback: calcMethod.btnClick)
               ],
             ),
           ],
