@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCSBPfSWo9Zt7Uc9xPFTJg-VUXW4Vj7qfA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>18452834510</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.goldcalc</string>
+	<key>PROJECT_ID</key>
+	<string>goldcalc-a8fec</string>
+	<key>STORAGE_BUCKET</key>
+	<string>goldcalc-a8fec.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:18452834510:ios:b1c97213b8242382a7489f</string>
+</dict>
+</plist>

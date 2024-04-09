@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18452834510",
+    "project_id": "goldcalc-a8fec",
+    "storage_bucket": "goldcalc-a8fec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18452834510:android:e32d2a598cc99528a7489f",
+        "android_client_info": {
+          "package_name": "com.example.goldcalc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoSfVytdwcnfsITP8kl-radLS4D9h23UQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
