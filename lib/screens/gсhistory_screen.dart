@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:goldcalc/screens/gold_calc_screen.dart';
-import 'package:goldcalc/methods/get_history_method.dart';
+import 'package:goldcalc/screens/gc_screen.dart';
+import 'package:goldcalc/controllers/get_hist_contr.dart';
 
 class GoldCalcHistory extends StatefulWidget {
   const GoldCalcHistory({Key? key}) : super(key: key);
@@ -11,15 +11,21 @@ class GoldCalcHistory extends StatefulWidget {
 
 class _GoldCalcHistory extends State<GoldCalcHistory> {
   late GetHistoryMethod getHistory;
-
+  List<String> historyList = [];
 
   @override
   void initState() {
     super.initState();
-    getHistory = GetHistoryMethod(updateStateCallback: () {
-      setState(() {});
+    getHistory = GetHistoryMethod();
+    loadHistory();
+  }
+
+  // Метод для загрузки истории из Firestore и обновления состояния виджета
+  Future<void> loadHistory() async {
+    List<String> history = await getHistory.getAllHistory(); // Получаем историю из Firestore
+    setState(() {
+      historyList = history; // Обновляем состояние виджета
     });
-    getHistory.loadHistoryList();
   }
 
   @override
@@ -41,11 +47,13 @@ class _GoldCalcHistory extends State<GoldCalcHistory> {
         leading: IconButton(
           icon: Icon(Icons.calculate, color: Color(0xFFD4AF37)),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => GoldCalcScreen()));
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => GoldCalcScreen()));
           },
         ),
       ),
-      body: SingleChildScrollView( // Обернуть контейнер в SingleChildScrollView
+      body: SingleChildScrollView(
+        // Обернуть контейнер в SingleChildScrollView
         child: Container(
           alignment: Alignment.centerRight,
           padding: EdgeInsets.all(14),
@@ -54,12 +62,14 @@ class _GoldCalcHistory extends State<GoldCalcHistory> {
             children: [
               SizedBox(height: 6),
               ListView.builder(
-                shrinkWrap: true, // ListView занимает только необходимое пространство
-                physics: NeverScrollableScrollPhysics(), // Отключает прокрутку ListView, так как уже есть SingleChildScrollView
-                itemCount: getHistory.historyList.length,
+                shrinkWrap: true,
+                // ListView занимает только необходимое пространство
+                physics: NeverScrollableScrollPhysics(),
+                // Отключает прокрутку ListView, так как уже есть SingleChildScrollView
+                itemCount: historyList.length,
                 itemBuilder: (context, index) {
                   return Text(
-                    getHistory.historyList[index],
+                    historyList[index],
                     style: TextStyle(
                       color: Color(0xFFD4AF37),
                       fontSize: 16,

@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:goldcalc/screens/gold_calc_screen.dart';
-
-
-
+import 'package:goldcalc/screens/gc_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

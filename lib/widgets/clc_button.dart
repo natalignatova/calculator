@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class ClcButton extends StatelessWidget {
-  //const ClcButton({super.key});
   final String txt;
   final int txtclr;
   final int backclr;
@@ -16,10 +15,10 @@ class ClcButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(10.0),
+      margin: EdgeInsets.all(MediaQuery.of(context).size.width/5/5/3),
       child: SizedBox(
-        width: 80,
-        height: 80,
+        width: MediaQuery.of(context).size.width/5,
+        height: MediaQuery.of(context).size.width/5,
         child: TextButton(
           onPressed: () => callback(txt),
           child: Text(
@@ -32,7 +31,7 @@ class ClcButton extends StatelessWidget {
           ),
           style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width/10),
               ),
               backgroundColor: Color(backclr)),
         ),

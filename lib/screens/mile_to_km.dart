@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:goldcalc/screens/gold_calc_screen.dart';
+import 'package:goldcalc/screens/gc_screen.dart';
 import 'package:goldcalc/widgets/clc_button.dart';
-import 'package:goldcalc/methods/converter_method.dart';
-
-
+import 'package:goldcalc/controllers/conv_contr.dart';
 
 class MileToKm extends StatefulWidget {
   const MileToKm({super.key});
@@ -201,4 +199,3 @@ class _MileToKmState extends State<MileToKm> {
     );
   }
 }
-

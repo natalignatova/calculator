@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'dart:core';
-import 'package:goldcalc/methods/add_history_method.dart';
+import 'package:goldcalc/controllers/add_hist_contr.dart';
 
 class GoldCalcMethod {
   String txtDisplay = '';
@@ -23,7 +23,7 @@ class GoldCalcMethod {
   }
 
   void btnClick(String btnVal) {
-    //setState(() {
+
     if (btnVal == 'AC') {
       txtDisplay = '';
       hist = '';
@@ -38,15 +38,13 @@ class GoldCalcMethod {
       if (txtDisplay.isNotEmpty) {
         hist = txtDisplay + '% =';
         txtDisplay = (double.parse(txtDisplay) * 0.01).toString();
-        stringToHistory = hist + txtDisplay + ', ' +
-            DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-        addHistory.addHistoryToList('historyGoldCalc', stringToHistory);
+        stringToHistory = '${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}\n  $hist$txtDisplay';
+        addHistory.addItemHistory(stringToHistory);
       } else if ((RegExp(r"[\/x+\-]").allMatches(hist)).isEmpty) {
         txtDisplay = (double.parse(hist) * 0.01).toString();
         hist += btnVal;
-        stringToHistory = hist + '=' + txtDisplay + ', ' +
-            DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-        addHistory.addHistoryToList('historyGoldCalc', stringToHistory);
+        stringToHistory = '${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}\n  $hist = $txtDisplay';
+        addHistory.addItemHistory(stringToHistory);
       } else {
         txtDisplay = "Error";
       }
@@ -57,25 +55,23 @@ class GoldCalcMethod {
         expression = hist.substring(0, hist.length - 1);
         expression = expression.replaceAll('x', '*');
         expression = expression.replaceAll('÷', '/');
-        // print(expression);
+
         try {
           Parser p = Parser();
-          //  print(p);
+
           Expression exp = p.parse(expression);
-          //  print(exp);
+
           ContextModel cm = ContextModel();
           txtDisplay = '${exp.evaluate(EvaluationType.REAL, cm)}';
-          // txtDisplay = res.substring(0, 9);;
-          stringToHistory = hist + txtDisplay + ', ' +
-              DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-          addHistory.addHistoryToList('historyGoldCalc', stringToHistory);
+          stringToHistory = '${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}\n  $hist$txtDisplay';
+          addHistory.addItemHistory(stringToHistory);
         } catch (e) {
           txtDisplay = "Error";
-          // print('Ошибка: $e');
+
         }
       }
     }
-    // });
+
     updateStateCallback();
   }
 }

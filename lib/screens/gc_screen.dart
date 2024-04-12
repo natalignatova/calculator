@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:goldcalc/widgets/clc_button.dart';
 import 'package:goldcalc/screens/mile_to_km.dart';
-import 'package:goldcalc/screens/goldcalchistory.dart';
+import 'package:goldcalc/screens/gсhistory_screen.dart';
 import 'dart:core';
-import 'package:goldcalc/methods/calc_method.dart';
-import 'package:goldcalc/methods/add_history_method.dart';
+import 'package:goldcalc/controllers/calc_contr.dart';
+import 'package:goldcalc/controllers/add_hist_contr.dart';
 
 class GoldCalcScreen extends StatefulWidget {
   const GoldCalcScreen({super.key});
@@ -74,7 +74,7 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                   style: TextStyle(
                     fontFamily: 'Outfit',
                     color: Color(0xFFD4AF37),
-                    fontSize: 60,
+                    fontSize: 50,
                     letterSpacing: 10,
                     fontWeight: FontWeight.w500,
                   ),
@@ -91,7 +91,7 @@ class _GoldCalcScreenState extends State<GoldCalcScreen> {
                   style: TextStyle(
                     fontFamily: 'Outfit',
                     color: Color(0x7FD4AF37),
-                    fontSize: 36,
+                    fontSize: 32,
                   ),
                 ),
               ),
