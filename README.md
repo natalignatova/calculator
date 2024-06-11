@@ -1,5 +1,5 @@
 # goldcalc
 
-A new Flutter student's project 
+Flutter student's project 
 
 
